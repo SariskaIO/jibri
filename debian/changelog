@@ -1,3 +1,9 @@
+jibri (8.0-121-gaf3b2d0-1) unstable; urgency=medium
+
+  * Built from git. af3b2d0
+
+ -- Ubuntu <ubuntu@ip-172-31-26-58.ec2.internal>  Sat, 18 Dec 2021 14:02:27 +0000
+
 jibri (8.0-107-ga0c598c-1) unstable; urgency=medium
 
   * Built from git. a0c598c
