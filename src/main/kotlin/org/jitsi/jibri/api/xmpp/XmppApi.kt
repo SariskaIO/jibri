@@ -319,9 +319,9 @@ class XmppApi(
             JibriMode.STREAM -> {
                 val streamKeys = appData?.streamKeys
                 val streamUrls = appData?.streamUrls
-                var isCDN = appData?.isCDN
+                var app = appData?.app
+                var stream  = appData?.stream
                 var fullRTMPUrl = "-flags +global_header -f tee" 
-                var isCDN = appData?.isCDN            
 
                 val streamMaps = mapOf(
                     "instagram" to "rtmp://live-upload.instagram.com:80/rtmp/",
@@ -329,7 +329,7 @@ class XmppApi(
                     "twitch" to "rtmp://live-cdg.twitch.tv/app/",
                     "vimeo" to "rtmp://rtmp-global.cloud.vimeo.com/live/",
                     "periscope" to  "rtmp://in.pscp.tv:80/",
-                    "facebook" to "rtmp://127.0.0.1:1936/rtmp/");
+                    "facebook" to "rtmp://127.0.0.1:1936/rtmp/")
             
                 for (streamKey in streamKeys) { 
                     fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]${streamMaps.get(streamKey.streamKey)}"+"${streamKey.streamValue}|" 
@@ -339,8 +339,8 @@ class XmppApi(
                     fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]"+"${rtmpUrl}|"
                 }
 
-                if (isCDN) {
-                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]rtmp://srs-edge-service.streaming.svc.cluster.local:1985|"
+                if (app && stream) {
+                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]rtmp://srs-api-service.streaming.svc.cluster.local:1985?stream=${stream}&app=${app}|"
                 }
 
                 if (isRecording) {
@@ -353,7 +353,7 @@ class XmppApi(
                     fullRTMPUrl = fullRTMPUrl.dropLast(1)
                 }
 
-                logger.info("Using RTMP URL $fullRTMPUrl and viewing URL")
+                logger.info("Using RTMP URL $fullRTMPUrl")
                 jibriManager.startStreaming(
                     serviceParams,
                     StreamingParams(

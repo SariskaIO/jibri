@@ -49,6 +49,12 @@ data class AppData(
 
     @JsonProperty("streamKeys")
     val streamKeys: List<StreamKey>
+    
+    @JsonProperty("app")
+    val app: String
+
+    @JsonProperty("stream")
+    val stream: String
 )
 
 
