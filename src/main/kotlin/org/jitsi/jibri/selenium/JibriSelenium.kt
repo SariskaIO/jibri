@@ -23,6 +23,7 @@ import org.jitsi.jibri.config.XmppCredentials
 import org.jitsi.jibri.selenium.pageobjects.CallPage
 import org.jitsi.jibri.selenium.pageobjects.HomePage
 import org.jitsi.jibri.selenium.status_checks.EmptyCallStatusCheck
+import org.jitsi.jibri.selenium.status_checks.IceConnectionStatusCheck
 import org.jitsi.jibri.selenium.status_checks.LocalParticipantKickedStatusCheck
 import org.jitsi.jibri.selenium.status_checks.MediaReceivedStatusCheck
 import org.jitsi.jibri.selenium.util.BrowserFileHandler
@@ -80,10 +81,10 @@ data class CallParams(
     override fun toString(): String {
         return if (passcode.isNullOrEmpty()) {
             "CallParams(callUrlInfo=$callUrlInfo, email='$email', passcode=$passcode" +
-                    ", callStatsUsernameOverride=$callStatsUsernameOverride, displayName=$displayName)"
+                ", callStatsUsernameOverride=$callStatsUsernameOverride, displayName=$displayName)"
         } else {
             "CallParams(callUrlInfo=$callUrlInfo, email='$email', passcode=*****" +
-                    ", callStatsUsernameOverride=$callStatsUsernameOverride, displayName=$displayName)"
+                ", callStatsUsernameOverride=$callStatsUsernameOverride, displayName=$displayName)"
         }
     }
 }
@@ -137,6 +138,7 @@ val SIP_GW_URL_OPTIONS = listOf(
     "config.enableEmailInStats=false",
     "config.p2p.enabled=false",
     "config.prejoinPageEnabled=false",
+    "config.prejoinConfig.enabled=false",
     "config.requireDisplayName=false",
     "devices.videoInput=\"PJSUA\""
 )
@@ -150,6 +152,7 @@ val RECORDING_URL_OPTIONS = listOf(
     "config.analytics.disabled=true",
     "config.p2p.enabled=false",
     "config.prejoinPageEnabled=false",
+    "config.prejoinConfig.enabled=false",
     "config.requireDisplayName=false"
 )
 
@@ -221,6 +224,7 @@ class JibriSelenium(
         val callStatusChecks = buildList {
             add(EmptyCallStatusCheck(logger, callEmptyTimeout = jibriSeleniumOptions.emptyCallTimeout))
             add(MediaReceivedStatusCheck(logger))
+            add(IceConnectionStatusCheck(logger))
             if (jibriSeleniumOptions.enableLocalParticipantStatusChecks) {
                 add(LocalParticipantKickedStatusCheck(logger))
             }

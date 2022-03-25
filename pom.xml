@@ -21,7 +21,7 @@
         <kotest.version>4.4.3</kotest.version>
         <mockk.version>1.10.0</mockk.version>
         <ktor.version>1.5.2</ktor.version>
-        <jicoco.version>1.1-97-g593325c</jicoco.version>
+        <jicoco.version>1.1-103-g7b1cd54</jicoco.version>
     </properties>
 
     <dependencies>
@@ -101,7 +101,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-util</artifactId>
-            <version>9.4.41.v20210516</version>
+            <version>9.4.44.v20210927</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -344,6 +344,7 @@
                         <!-- gradle.build.dir is the property name that JunitXmlReporter expects to find, even though
                         this is maven -->
                         <gradle.build.dir>${project.build.directory}/surefire-reports</gradle.build.dir>
+                        <java.util.logging.config.file>${project.basedir}/lib/test-logging.properties</java.util.logging.config.file>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

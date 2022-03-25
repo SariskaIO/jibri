@@ -134,7 +134,7 @@ class CallPage(driver: RemoteWebDriver) : AbstractPageObject(driver) {
                     "xmpp.muc_member_joined",
                     (from, nick, role, hidden, statsid, status, identity) => {
                         console.log("Jibri got MUC_MEMBER_JOINED: ", from, identity);
-                        if (identity) {
+                        if (!hidden && identity) {
                             window._jibriParticipants.push(identity);
                         }
                     }
@@ -217,6 +217,26 @@ class CallPage(driver: RemoteWebDriver) : AbstractPageObject(driver) {
             else -> {
                 logger.error("error running numRemoteParticipantsJigasi script: $result ${result::class.java}")
                 0
+            }
+        }
+    }
+
+    /**
+     * Return true if ICE is connected.
+     */
+    fun isIceConnected(): Boolean {
+        val result: Any? = driver.executeScript(
+            """
+            try {
+                return APP.conference.getConnectionState();
+            } catch(e) {
+                return e.message;
+            }
+        """
+        )
+        return (result.toString().lowercase() == "connected").also {
+            if (!it) {
+                logger.warn("ICE not connected: $result")
             }
         }
     }
