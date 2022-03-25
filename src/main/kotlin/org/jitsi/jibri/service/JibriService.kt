@@ -40,31 +40,9 @@ data class AppData(
      */
     @JsonProperty("file_recording_metadata")
     val fileRecordingMetadata: Map<Any, Any>?,
-    
+
     @JsonProperty("base_url")
     val baseUrl: String
-
-    @JsonProperty("streamUrls")
-    val streamUrls: List<String>,
-
-    @JsonProperty("streamKeys")
-    val streamKeys: List<StreamKey>
-    
-    @JsonProperty("app")
-    val app: String
-
-    @JsonProperty("stream")
-    val stream: String
-)
-
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class StreamKey(
-    @JsonProperty("streamKey")
-    var streamKey: String,
-
-    @JsonProperty("streamValue")
-    var streamValue: String
 )
 
 /**

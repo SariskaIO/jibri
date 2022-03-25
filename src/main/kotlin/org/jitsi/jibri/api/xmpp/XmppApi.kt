@@ -360,6 +360,7 @@ class XmppApi(
         environmentContext: EnvironmentContext,
         serviceStatusHandler: JibriServiceStatusHandler
     ) {
+
         val appData = startIq.appData?.let {
             jacksonObjectMapper().readValue<AppData>(startIq.appData)
         }
@@ -367,15 +368,14 @@ class XmppApi(
         var baseUrl = if (appData?.baseUrl == null || appData.baseUrl.isEmpty())
     		xmppEnvironment.baseUrl else appData.baseUrl
       
-	    val callName = startIq.room.localpart.toString()
+	val callName = startIq.room.localpart.toString()
         val listParams =  listOf<String>("roomId", callName) 
-	    val callUrlInfo = CallUrlInfo(baseUrl.orEmpty(), "", listParams)
+	val callUrlInfo = CallUrlInfo(baseUrl.orEmpty(), "", listParams)
  
-    	val serviceParams = ServiceParams(xmppEnvironment.usageTimeoutMins, appData)
+	val serviceParams = ServiceParams(xmppEnvironment.usageTimeoutMins, appData)
         val callParams = CallParams(callUrlInfo)
         logger.info("Parsed call url info: $callUrlInfo")
         logger.info("Parse brajendra")
-
         when (startIq.mode()) {
             JibriMode.FILE -> {
                 jibriManager.startFileRecording(
@@ -386,50 +386,28 @@ class XmppApi(
                 )
             }
             JibriMode.STREAM -> {
-                val streamKeys = appData?.streamKeys
-                val streamUrls = appData?.streamUrls
-                var app = appData?.app
-                var stream  = appData?.stream
-                var fullRTMPUrl = "-flags +global_header -f tee" 
-
-                val streamMaps = mapOf(
-                    "instagram" to "rtmp://live-upload.instagram.com:80/rtmp/",
-                    "youtube" to "rtmp://a.rtmp.youtube.com/live2/",
-                    "twitch" to "rtmp://live-cdg.twitch.tv/app/",
-                    "vimeo" to "rtmp://rtmp-global.cloud.vimeo.com/live/",
-                    "periscope" to  "rtmp://in.pscp.tv:80/",
-                    "facebook" to "rtmp://127.0.0.1:1936/rtmp/")
-            
-                for (streamKey in streamKeys) { 
-                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]${streamMaps.get(streamKey.streamKey)}"+"${streamKey.streamValue}|" 
+                val rtmpUrl = if (startIq.streamId.isRtmpUrl()) {
+                    startIq.streamId
+                } else {
+                    "$YOUTUBE_URL/${startIq.streamId}"
                 }
-                    
-                for (rtmpUrl in streamUrls) { 
-                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]"+"${rtmpUrl}|"
+                val viewingUrl = if (startIq.youtubeBroadcastId != null) {
+                    if (startIq.youtubeBroadcastId.isViewingUrl()) {
+                        startIq.youtubeBroadcastId
+                    } else {
+                        "http://youtu.be/${startIq.youtubeBroadcastId}"
+                    }
+                } else {
+                    null
                 }
-
-                if (app && stream) {
-                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]rtmp://srs-api-service.streaming.svc.cluster.local:1985?stream=${stream}&app=${app}|"
-                }
-
-                if (isRecording) {
-                    val suffix = "_${LocalDateTime.now().format(TIMESTAMP_FORMATTER)}.$extension"
-                    val filename = "${callName.take(MAX_FILENAME_LENGTH - suffix.length)}$suffix"
-                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore] -f mp4 /config/jibri/recording/veqhebbqgbacqzff/${filename}.mp4"
-                }
-
-                if (fullRTMPUrl.last().toString().equals("|",true)) {
-                    fullRTMPUrl = fullRTMPUrl.dropLast(1)
-                }
-
-                logger.info("Using RTMP URL $fullRTMPUrl")
+                logger.info("Using RTMP URL $rtmpUrl and viewing URL $viewingUrl")
                 jibriManager.startStreaming(
                     serviceParams,
                     StreamingParams(
                         callParams,
                         startIq.sessionId,
                         xmppEnvironment.callLogin,
-                        rtmpUrl = fullRTMPUrl,
+                        rtmpUrl = rtmpUrl,
                         viewingUrl = viewingUrl
                     ),
                     environmentContext,
