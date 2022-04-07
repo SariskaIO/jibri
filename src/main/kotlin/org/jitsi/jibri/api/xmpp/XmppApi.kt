@@ -330,13 +330,12 @@ class XmppApi(
                     "vimeo" to "rtmp://rtmp-global.cloud.vimeo.com/live/",
                     "periscope" to  "rtmp://in.pscp.tv:80/",
                     "facebook" to "rtmp://127.0.0.1:1936/rtmp/")
-            
-                for (streamKey in streamKeys) { 
-                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]${streamMaps.get(streamKey.streamKey)}"+"${streamKey.streamValue}|" 
+                streamKeys.forEach {
+                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]${streamMaps.get(it.streamKey)}"+"${it.streamValue}|"
                 }
-                    
-                for (rtmpUrl in streamUrls) { 
-                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]"+"${rtmpUrl}|"
+
+                streamUrls.forEach {
+                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]"+"${it}|"
                 }
 
                 if (app && stream) {
