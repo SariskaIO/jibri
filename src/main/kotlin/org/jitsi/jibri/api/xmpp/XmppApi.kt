@@ -30,12 +30,10 @@ import org.jitsi.jibri.service.JibriServiceStatusHandler
 import org.jitsi.jibri.service.ServiceParams
 import org.jitsi.jibri.service.impl.SipGatewayServiceParams
 import org.jitsi.jibri.service.impl.StreamingParams
-import org.jitsi.jibri.service.impl.YOUTUBE_URL
 import org.jitsi.jibri.sipgateway.SipClientParams
 import org.jitsi.jibri.status.ComponentState
 import org.jitsi.jibri.status.JibriStatus
 import org.jitsi.jibri.status.JibriStatusManager
-import org.jitsi.jibri.util.getCallUrlInfoFromJid
 import org.jitsi.utils.logging2.createLogger
 import org.jitsi.xmpp.extensions.jibri.JibriIq
 import org.jitsi.xmpp.extensions.jibri.JibriIqProvider
@@ -294,18 +292,16 @@ class XmppApi(
         val appData = startIq.appData?.let {
             jacksonObjectMapper().readValue<AppData>(startIq.appData)
         }
-
-        var baseUrl = if (appData?.baseUrl == null || appData.baseUrl.isEmpty())
-    		xmppEnvironment.baseUrl else appData.baseUrl
-      
-	    val callName = startIq.room.localpart.toString()
-        val listParams =  listOf<String>("roomId", callName) 
-	    val callUrlInfo = CallUrlInfo(baseUrl.orEmpty(), "", listParams)
- 
     	val serviceParams = ServiceParams(xmppEnvironment.usageTimeoutMins, appData)
+        val baseUrl = if (serviceParams.appData?.baseUrl == null || serviceParams.appData.baseUrl.isEmpty())
+            xmppEnvironment.baseUrl else serviceParams.appData.baseUrl
+
+        val callName = startIq.room.localpart.toString()
+        val listParams =  listOf<String>("roomId", callName)
+        val callUrlInfo = CallUrlInfo(baseUrl.orEmpty(), "", listParams)
+
         val callParams = CallParams(callUrlInfo)
         logger.info("Parsed call url info: $callUrlInfo")
-        logger.info("Parse brajendra")
 
         when (startIq.mode()) {
             JibriMode.FILE -> {
@@ -317,10 +313,10 @@ class XmppApi(
                 )
             }
             JibriMode.STREAM -> {
-                val streamKeys = appData?.streamKeys
-                val streamUrls = appData?.streamUrls
-                var app = appData?.app
-                var stream  = appData?.stream
+                val streamKeys = serviceParams.appData?.streamKeys
+                val streamUrls = serviceParams.appData?.streamUrls
+                var app = serviceParams.appData?.app
+                var stream  = serviceParams.appData?.stream
                 var fullRTMPUrl = "-flags +global_header -f tee" 
 
                 val streamMaps = mapOf(

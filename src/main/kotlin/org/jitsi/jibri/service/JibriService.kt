@@ -42,16 +42,16 @@ data class AppData(
     val fileRecordingMetadata: Map<Any, Any>?,
     
     @JsonProperty("base_url")
-    val baseUrl: String
+    val baseUrl: String?,
 
     @JsonProperty("streamUrls")
     val streamUrls: List<String>,
 
     @JsonProperty("streamKeys")
-    val streamKeys: List<StreamKey>
+    val streamKeys: List<StreamKey>,
     
     @JsonProperty("app")
-    val app: String
+    val app: String,
 
     @JsonProperty("stream")
     val stream: String
