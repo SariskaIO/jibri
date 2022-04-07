@@ -49,6 +49,9 @@ import org.jivesoftware.smack.provider.ProviderManager
 import org.jivesoftware.smackx.ping.PingManager
 import org.jxmpp.jid.impl.JidCreate
 import org.jitsi.jibri.CallUrlInfo
+import java.nio.file.Path
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 private class UnsupportedIqMode(val iqMode: String) : Exception()
 
@@ -315,8 +318,9 @@ class XmppApi(
             JibriMode.STREAM -> {
                 val streamKeys = serviceParams.appData?.streamKeys
                 val streamUrls = serviceParams.appData?.streamUrls
-                var app = serviceParams.appData?.app
-                var stream  = serviceParams.appData?.stream
+                val isRecording = serviceParams.appData?.isRecording
+                val app = serviceParams.appData?.app
+                val stream  = serviceParams.appData?.stream
                 var fullRTMPUrl = "-flags +global_header -f tee" 
 
                 val streamMaps = mapOf(
@@ -349,6 +353,16 @@ class XmppApi(
                     fullRTMPUrl = fullRTMPUrl.dropLast(1)
                 }
 
+                val viewingUrl = if (startIq.youtubeBroadcastId != null) {
+                    if (startIq.youtubeBroadcastId.isViewingUrl()) {
+                        startIq.youtubeBroadcastId
+                    } else {
+                        "http://youtu.be/${startIq.youtubeBroadcastId}"
+                    }
+                } else {
+                    null
+                }
+
                 logger.info("Using RTMP URL $fullRTMPUrl")
                 jibriManager.startStreaming(
                     serviceParams,
@@ -379,6 +393,11 @@ class XmppApi(
                 throw UnsupportedIqMode(startIq.mode().toString())
             }
         }
+    }
+
+    companion object {
+        private val TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")
+        const val MAX_FILENAME_LENGTH = 125
     }
 }
 

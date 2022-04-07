@@ -54,7 +54,10 @@ data class AppData(
     val app: String,
 
     @JsonProperty("stream")
-    val stream: String
+    val stream: String,
+
+    @JsonProperty("isRecording")
+    val isRecording: Boolean
 )
 
 
