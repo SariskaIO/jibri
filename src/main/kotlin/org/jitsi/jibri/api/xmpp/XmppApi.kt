@@ -321,7 +321,7 @@ class XmppApi(
                 val isRecording = serviceParams.appData?.isRecording
                 val app = serviceParams.appData?.app
                 val stream  = serviceParams.appData?.stream
-                var fullRTMPUrl = "-flags +global_header -f tee" 
+                var fullRTMPUrl = "-flags +global_header -f tee"
 
                 val streamMaps = mapOf(
                     "instagram" to "rtmp://live-upload.instagram.com:80/rtmp/",
@@ -331,11 +331,11 @@ class XmppApi(
                     "periscope" to  "rtmp://in.pscp.tv:80/",
                     "facebook" to "rtmp://127.0.0.1:1936/rtmp/")
 
-                streamKeys.forEach {
-                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]${streamMaps.get(it.streamKey)}"+"${it.streamValue}|"
+                streamKeys?.forEach {
+                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]${streamMaps.get(it.streamKey)}" + "${it.streamValue}|"
                 }
 
-                streamUrls.forEach {
+                streamUrls?.forEach {
                     fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]"+"${it}|"
                 }
 
