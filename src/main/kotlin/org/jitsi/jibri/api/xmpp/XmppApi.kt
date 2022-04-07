@@ -339,7 +339,7 @@ class XmppApi(
                     fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]"+"${it}|"
                 }
 
-                if (app && stream) {
+                if (app != null && stream != null) {
                     fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]rtmp://srs-api-service.streaming.svc.cluster.local:1985?stream=${stream}&app=${app}|"
                 }
 
