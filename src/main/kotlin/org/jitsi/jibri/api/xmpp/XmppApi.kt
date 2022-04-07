@@ -343,7 +343,7 @@ class XmppApi(
                     fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]rtmp://srs-api-service.streaming.svc.cluster.local:1985?stream=${stream}&app=${app}|"
                 }
 
-                if (isRecording) {
+                if (isRecording == true) {
                     val suffix = "_${LocalDateTime.now().format(TIMESTAMP_FORMATTER)}.$extension"
                     val filename = "${callName.take(MAX_FILENAME_LENGTH - suffix.length)}$suffix"
                     fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore] -f mp4 /config/jibri/recording/veqhebbqgbacqzff/${filename}.mp4"
