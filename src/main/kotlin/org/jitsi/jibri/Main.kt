@@ -144,14 +144,15 @@ fun main(args: Array<String>) {
     val xmppApi = XmppApi(
         jibriManager = jibriManager,
         xmppConfigs = xmppEnvironments,
-        jibriStatusManager = jibriStatusManager
+        jibriStatusManager = jibriStatusManager,
+        jibriManager.statsDClient
     )
     xmppApi.start()
 
     logger.info("Using port ${HttpApi.port} for HTTP API")
 
     // HttpApi
-    with(HttpApi(jibriManager, jibriStatusManager)) {
+    with(HttpApi(jibriManager, jibriStatusManager, webhookClient)) {
         embeddedServer(Jetty, port = HttpApi.port) {
             apiModule()
         }
