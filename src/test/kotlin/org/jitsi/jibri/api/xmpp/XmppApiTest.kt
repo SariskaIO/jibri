@@ -40,6 +40,7 @@ import org.jitsi.jibri.helpers.setIoPool
 import org.jitsi.jibri.service.AppData
 import org.jitsi.jibri.service.JibriServiceStatusHandler
 import org.jitsi.jibri.service.ServiceParams
+import org.jitsi.jibri.service.StreamKey
 import org.jitsi.jibri.status.ComponentBusyStatus
 import org.jitsi.jibri.status.ComponentHealthStatus
 import org.jitsi.jibri.status.ComponentState
@@ -195,8 +196,14 @@ class XmppApiTest : ShouldSpec() {
                             )
                         )
                     )
-		    val baseUrl = "http://baseurl.com/"
-                    val appData = AppData(fileRecordingMetadata = fileMetaData, baseUrl = baseUrl)
+                    val baseUrl = "http://baseurl.com/"
+                    val streamUrls = arrayListOf("streamUrls")
+                    val streamKey = StreamKey("streamKey", "streamValue")
+                    val streamKeys = arrayListOf(streamKey)
+                    val app = "app"
+                    val stream = "stream"
+                    val appData = AppData(fileRecordingMetadata = fileMetaData, baseUrl = baseUrl,
+                        streamUrls = streamUrls, streamKeys = streamKeys, app = app, stream = stream, false)
                     val jsonString = jacksonObjectMapper().writeValueAsString(appData)
                     jibriIq.appData = jsonString
 

@@ -42,7 +42,19 @@ internal class AppDataTest : ShouldSpec() {
                         "token":"XXXXXXXXYYYYYYYYYZZZZZZAAAAAAABBBBBBCCCDDD"
                     }
                 },
-                "base_url" : "http://baseurl.com/"
+                "base_url" : "http://baseurl.com/",
+                "streamUrls" : [
+                "http://stream.com/"
+                ],
+                "streamKeys" : [
+                    {
+                        "streamKey" : "streamKey",
+                        "streamValue" : "streamValue"
+                    }
+                ],
+                "app" : "app",
+                "stream" : "stream",
+                "isRecording" : "true"
             }
             """.trimIndent()
             should("be parsed correctly") {
@@ -74,6 +86,18 @@ internal class AppDataTest : ShouldSpec() {
                     }
                 },
                 "base_url" : "http://baseurl.com/",
+                "streamUrls" : [
+                "http://stream.com/"
+                ],
+                "streamKeys" : [
+                    {
+                        "streamKey" : "streamKey",
+                        "streamValue" : "streamValue"
+                    }
+                ],
+                "app" : "app",
+                "stream" : "stream",
+                "isRecording" : "true",
                 "other_new_field": "hello"
             }
             """.trimIndent()
@@ -96,4 +120,3 @@ internal class AppDataTest : ShouldSpec() {
         }
     }
 }
-

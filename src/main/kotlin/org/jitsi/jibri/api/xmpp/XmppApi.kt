@@ -58,7 +58,6 @@ import org.jivesoftware.smack.provider.ProviderManager
 import org.jivesoftware.smackx.ping.PingManager
 import org.jxmpp.jid.impl.JidCreate
 import org.jitsi.jibri.CallUrlInfo
-import java.nio.file.Path
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -364,12 +363,12 @@ class XmppApi(
         val appData = startIq.appData?.let {
             jacksonObjectMapper().readValue<AppData>(startIq.appData)
         }
-    	val serviceParams = ServiceParams(xmppEnvironment.usageTimeoutMins, appData)
+        val serviceParams = ServiceParams(xmppEnvironment.usageTimeoutMins, appData)
         val baseUrl = if (serviceParams.appData?.baseUrl == null || serviceParams.appData.baseUrl.isEmpty())
             xmppEnvironment.baseUrl else serviceParams.appData.baseUrl
 
         val callName = startIq.room.localpart.toString()
-        val listParams =  listOf<String>("roomId", callName)
+        val listParams = listOf<String>("roomId", callName)
         val callUrlInfo = CallUrlInfo(baseUrl.orEmpty(), "", listParams)
 
         val callParams = CallParams(callUrlInfo)
@@ -389,7 +388,7 @@ class XmppApi(
                 val streamUrls = serviceParams.appData?.streamUrls
                 val isRecording = serviceParams.appData?.isRecording
                 val app = serviceParams.appData?.app
-                val stream  = serviceParams.appData?.stream
+                val stream = serviceParams.appData?.stream
                 var fullRTMPUrl = "-flags +global_header -f tee"
 
                 val streamMaps = mapOf(
@@ -397,28 +396,31 @@ class XmppApi(
                     "youtube" to "rtmp://a.rtmp.youtube.com/live2/",
                     "twitch" to "rtmp://live-cdg.twitch.tv/app/",
                     "vimeo" to "rtmp://rtmp-global.cloud.vimeo.com/live/",
-                    "periscope" to  "rtmp://in.pscp.tv:80/",
+                    "periscope" to "rtmp://in.pscp.tv:80/",
                     "facebook" to "rtmp://127.0.0.1:1936/rtmp/")
 
                 streamKeys?.forEach {
-                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]${streamMaps.get(it.streamKey)}" + "${it.streamValue}|"
+                    fullRTMPUrl += "[select=\'v:0,a\':f=flv:onfail=ignore]${streamMaps.get(it.streamKey)}" +
+                            "${it.streamValue}|"
                 }
 
                 streamUrls?.forEach {
-                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]"+"${it}|"
+                    fullRTMPUrl += "[select=\'v:0,a\':f=flv:onfail=ignore]$it|"
                 }
 
                 if (app != null && stream != null) {
-                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore]rtmp://srs-edge-service.streaming:1935?stream=${stream}&app=${app}|"
+                    fullRTMPUrl += "[select=\'v:0,a\':f=flv:onfail=ignore]rtmp://srs-edge-service.streaming" +
+                            ":1935?stream=$stream&app=$app|"
                 }
 
                 if (isRecording == true) {
                     val suffix = "_${LocalDateTime.now().format(TIMESTAMP_FORMATTER)}.mp4"
                     val filename = "${callName.take(MAX_FILENAME_LENGTH - suffix.length)}$suffix"
-                    fullRTMPUrl = fullRTMPUrl + "[select=\'v:0,a\':f=flv:onfail=ignore] -f mp4 /config/jibri/recording/veqhebbqgbacqzff/${filename}.mp4"
+                    fullRTMPUrl += "[select=\'v:0,a\':f=flv:onfail=ignore] -f mp4 " +
+                            "/config/jibri/recording/veqhebbqgbacqzff/$filename.mp4"
                 }
 
-                if (fullRTMPUrl.last().toString().equals("|",true)) {
+                if (fullRTMPUrl.last().toString().equals("|", true)) {
                     fullRTMPUrl = fullRTMPUrl.dropLast(1)
                 }
 
