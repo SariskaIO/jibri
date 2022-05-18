@@ -45,16 +45,16 @@ data class AppData(
     val baseUrl: String?,
 
     @JsonProperty("streamUrls")
-    val streamUrls: List<String>,
+    val streamUrls: List<String>?,
 
     @JsonProperty("streamKeys")
-    val streamKeys: List<StreamKey>,
+    val streamKeys: List<StreamKey>?,
 
     @JsonProperty("app")
-    val app: String,
+    val app: String?,
 
     @JsonProperty("stream")
-    val stream: String,
+    val stream: String?,
 
     @JsonProperty("isRecording")
     val isRecording: Boolean
