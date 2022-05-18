@@ -396,9 +396,6 @@ class XmppApi(
                 if (teeCommand.isNotEmpty()) {
                     fullRTMPUrl += "\"$teeCommand\""
                 }
-                if (fullRTMPUrl.last().toString().equals("|", true)) {
-                    fullRTMPUrl = fullRTMPUrl.dropLast(1)
-                }
 
                 val viewingUrl = if (startIq.youtubeBroadcastId != null) {
                     if (startIq.youtubeBroadcastId.isViewingUrl()) {
@@ -469,6 +466,10 @@ class XmppApi(
             val filename = "${callName.take(MAX_FILENAME_LENGTH - suffix.length)}$suffix"
             teeCommand += "[select=\'v:0,a\':f=flv:onfail=ignore] -f mp4 " +
                     "/config/jibri/recording/veqhebbqgbacqzff/$filename.mp4|"
+        }
+
+        if (teeCommand.last().toString().equals("|", true)) {
+            return teeCommand.dropLast(1)
         }
         return teeCommand
     }
