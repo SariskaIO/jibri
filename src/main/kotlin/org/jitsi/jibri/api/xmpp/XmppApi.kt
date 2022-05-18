@@ -58,6 +58,7 @@ import org.jivesoftware.smack.provider.ProviderManager
 import org.jivesoftware.smackx.ping.PingManager
 import org.jxmpp.jid.impl.JidCreate
 import org.jitsi.jibri.CallUrlInfo
+import org.jitsi.jibri.service.StreamKey
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -390,36 +391,11 @@ class XmppApi(
                 val app = serviceParams.appData?.app
                 val stream = serviceParams.appData?.stream
                 var fullRTMPUrl = "-flags +global_header -f tee"
-
-                val streamMaps = mapOf(
-                    "instagram" to "rtmp://live-upload.instagram.com:80/rtmp/",
-                    "youtube" to "rtmp://a.rtmp.youtube.com/live2/",
-                    "twitch" to "rtmp://live-cdg.twitch.tv/app/",
-                    "vimeo" to "rtmp://rtmp-global.cloud.vimeo.com/live/",
-                    "periscope" to "rtmp://in.pscp.tv:80/",
-                    "facebook" to "rtmp://127.0.0.1:1936/rtmp/")
-
-                streamKeys?.forEach {
-                    fullRTMPUrl += "[select=\'v:0,a\':f=flv:onfail=ignore]${streamMaps.get(it.streamKey)}" +
-                            "${it.streamValue}|"
+                val teeCommand = createFfmpegTeeSelectCommand(streamKeys, streamUrls, app,
+                    stream, isRecording, callName)
+                if (teeCommand.isNotEmpty()) {
+                    fullRTMPUrl += "\"$teeCommand\""
                 }
-
-                streamUrls?.forEach {
-                    fullRTMPUrl += "[select=\'v:0,a\':f=flv:onfail=ignore]$it|"
-                }
-
-                if (app != null && stream != null) {
-                    fullRTMPUrl += "[select=\'v:0,a\':f=flv:onfail=ignore]rtmp://srs-edge-service.streaming" +
-                            ":1935?stream=$stream&app=$app|"
-                }
-
-                if (isRecording == true) {
-                    val suffix = "_${LocalDateTime.now().format(TIMESTAMP_FORMATTER)}.mp4"
-                    val filename = "${callName.take(MAX_FILENAME_LENGTH - suffix.length)}$suffix"
-                    fullRTMPUrl += "[select=\'v:0,a\':f=flv:onfail=ignore] -f mp4 " +
-                            "/config/jibri/recording/veqhebbqgbacqzff/$filename.mp4"
-                }
-
                 if (fullRTMPUrl.last().toString().equals("|", true)) {
                     fullRTMPUrl = fullRTMPUrl.dropLast(1)
                 }
@@ -466,6 +442,37 @@ class XmppApi(
         }
     }
 
+    private fun createFfmpegTeeSelectCommand(
+        streamKeys: List<StreamKey>?,
+        streamUrls: List<String>?,
+        app: String?,
+        stream: String?,
+        isRecording: Boolean?,
+        callName: String
+    ): String {
+        var teeCommand = ""
+        streamKeys?.forEach {
+            teeCommand += "[select=\'v:0,a\':f=flv:onfail=ignore]${STREAM_MAPS[it.streamKey]}$it.streamValue|"
+        }
+
+        streamUrls?.forEach {
+            teeCommand += "[select=\'v:0,a\':f=flv:onfail=ignore]$it|"
+        }
+
+        if (app != null && stream != null) {
+            teeCommand += "[select=\'v:0,a\':f=flv:onfail=ignore] rtmp://srs-edge-service.streaming" +
+                    ":1935?stream=$stream&app=$app|"
+        }
+
+        if (isRecording == true) {
+            val suffix = "_${LocalDateTime.now().format(TIMESTAMP_FORMATTER)}.mp4"
+            val filename = "${callName.take(MAX_FILENAME_LENGTH - suffix.length)}$suffix"
+            teeCommand += "[select=\'v:0,a\':f=flv:onfail=ignore] -f mp4 " +
+                    "/config/jibri/recording/veqhebbqgbacqzff/$filename.mp4|"
+        }
+        return teeCommand
+    }
+
     companion object {
         private val TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss")
         const val MAX_FILENAME_LENGTH = 125
@@ -479,3 +486,11 @@ private fun String.isViewingUrl(): Boolean =
 
 private fun createEnvironmentContext(xmppEnvironment: XmppEnvironmentConfig, mucClient: MucClient) =
     EnvironmentContext("${xmppEnvironment.name}-${mucClient.id}")
+
+val STREAM_MAPS = mapOf(
+    "instagram" to "rtmp://live-upload.instagram.com:80/rtmp/",
+    "youtube" to "rtmp://a.rtmp.youtube.com/live2/",
+    "twitch" to "rtmp://live-cdg.twitch.tv/app/",
+    "vimeo" to "rtmp://rtmp-global.cloud.vimeo.com/live/",
+    "periscope" to "rtmp://in.pscp.tv:80/",
+    "facebook" to "rtmp://127.0.0.1:1936/rtmp/")
