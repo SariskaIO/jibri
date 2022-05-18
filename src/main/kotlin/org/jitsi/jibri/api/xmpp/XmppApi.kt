@@ -452,7 +452,7 @@ class XmppApi(
     ): String {
         var teeCommand = ""
         streamKeys?.forEach {
-            teeCommand += "[select=\'v:0,a\':f=flv:onfail=ignore]${STREAM_MAPS[it.streamKey]}$it.streamValue|"
+            teeCommand += "[select=\'v:0,a\':f=flv:onfail=ignore]${STREAM_MAPS[it.streamKey]}${it.streamValue}|"
         }
 
         streamUrls?.forEach {
