@@ -456,10 +456,10 @@ class XmppApi(
             teeCommand += "[select=\'v:0,a\':f=flv:onfail=ignore]$it|"
         }
 
-//        if (app != null && stream != null) {
+        if (app != null && stream != null) {
 //            teeCommand += "[select=\'v:0,a\':f=flv:onfail=ignore] rtmp://srs-edge-service.streaming" +
 //                    ":1935?stream=$stream&app=$app|"
-//        }
+        }
 
         if (isRecording == true) {
             val suffix = "_${LocalDateTime.now().format(TIMESTAMP_FORMATTER)}.mp4"
