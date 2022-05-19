@@ -449,22 +449,22 @@ class XmppApi(
     ): String {
         var teeCommand = ""
         streamKeys?.forEach {
-            teeCommand += "[select=\'v:0,a\':f=flv:onfail=ignore]${STREAM_MAPS[it.streamKey]}${it.streamValue}|"
+            teeCommand += "[select=\\'v:0,a\\':f=flv:onfail=ignore]${STREAM_MAPS[it.streamKey]}${it.streamValue}|"
         }
 
         streamUrls?.forEach {
-            teeCommand += "[select=\'v:0,a\':f=flv:onfail=ignore]$it|"
+            teeCommand += "[select=\\'v:0,a\\':f=flv:onfail=ignore]$it|"
         }
 
         if (app != null && stream != null) {
-//            teeCommand += "[select=\'v:0,a\':f=flv:onfail=ignore] rtmp://srs-edge-service.streaming" +
-//                    ":1935?stream=$stream&app=$app|"
+            teeCommand += "[select=\\'v:0,a\\':f=flv:onfail=ignore]rtmp://srs-edge-service.streaming:1935" +
+                    "?stream=$stream&app=$app|"
         }
 
         if (isRecording == true) {
             val suffix = "_${LocalDateTime.now().format(TIMESTAMP_FORMATTER)}.mp4"
             val filename = "${callName.take(MAX_FILENAME_LENGTH - suffix.length)}$suffix"
-            teeCommand += "[select=\'v:0,a\':f=flv:onfail=ignore] -f mp4 " +
+            teeCommand += "[select=\\'v:0,a\\':f=flv:onfail=ignore] -f mp4 " +
                     "/config/jibri/recording/veqhebbqgbacqzff/$filename.mp4|"
         }
 
