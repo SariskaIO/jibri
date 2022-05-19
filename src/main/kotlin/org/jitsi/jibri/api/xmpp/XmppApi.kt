@@ -390,7 +390,8 @@ class XmppApi(
                 val isRecording = serviceParams.appData?.isRecording
                 val app = serviceParams.appData?.app
                 val stream = serviceParams.appData?.stream
-                var fullRTMPUrl = "-map \"[v0]\" -map 0:a -flags +global_header -f tee "
+                var fullRTMPUrl = "-map \"[v0]\" -map \"[v1]\" -map 0:a -c:v " +
+                        "libx264 -c:a aac -flags +global_header -f tee "
                 val teeCommand = createFfmpegTeeSelectCommand(streamKeys, streamUrls, app,
                     stream, isRecording, callName)
                 if (teeCommand.isNotEmpty()) {
