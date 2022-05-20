@@ -464,8 +464,7 @@ class XmppApi(
         if (isRecording == true) {
             val suffix = "_${LocalDateTime.now().format(TIMESTAMP_FORMATTER)}.mp4"
             val filename = "${callName.take(MAX_FILENAME_LENGTH - suffix.length)}$suffix"
-            teeCommand += "[f=flv:onfail=ignore] -f mp4 " +
-                    "/config/jibri/recording/veqhebbqgbacqzff/$filename.mp4|"
+            teeCommand += "[f=flv:onfail=ignore] -f mp4 /config/jibri/recording/veqhebbqgbacqzff/$filename.mp4|"
         }
 
         if (teeCommand.last().toString().equals("|", true)) {
