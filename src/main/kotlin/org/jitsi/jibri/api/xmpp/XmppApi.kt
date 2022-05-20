@@ -390,11 +390,11 @@ class XmppApi(
                 val isRecording = serviceParams.appData?.isRecording
                 val app = serviceParams.appData?.app
                 val stream = serviceParams.appData?.stream
-                var fullRTMPUrl = ""
+                var fullRTMPUrl = "-map 0:v -map 0:a -c:a mp2 -f tee "
                 val teeCommand = createFfmpegTeeSelectCommand(streamKeys, streamUrls, app,
                     stream, isRecording, callName)
                 if (teeCommand.isNotEmpty()) {
-                    fullRTMPUrl += teeCommand
+                    fullRTMPUrl += "\"$teeCommand\""
                 }
 
                 val viewingUrl = if (startIq.youtubeBroadcastId != null) {
@@ -449,7 +449,7 @@ class XmppApi(
     ): String {
         var teeCommand = ""
         streamKeys?.forEach {
-            teeCommand += "${STREAM_MAPS[it.streamKey]}${it.streamValue}|"
+            teeCommand += "[f=flv:onfail=ignore]${STREAM_MAPS[it.streamKey]}${it.streamValue}|"
         }
 
         streamUrls?.forEach {
