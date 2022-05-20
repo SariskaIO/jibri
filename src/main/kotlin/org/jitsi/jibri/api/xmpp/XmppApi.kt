@@ -390,7 +390,7 @@ class XmppApi(
                 val isRecording = serviceParams.appData?.isRecording
                 val app = serviceParams.appData?.app
                 val stream = serviceParams.appData?.stream
-                var fullRTMPUrl = "-map 0:v -map 1:a -c:a mp2 -flags +global_header -f tee "
+                var fullRTMPUrl = ""
                 val teeCommand = createFfmpegTeeSelectCommand(streamKeys, streamUrls, app,
                     stream, isRecording, callName)
                 if (teeCommand.isNotEmpty()) {
@@ -449,7 +449,7 @@ class XmppApi(
     ): String {
         var teeCommand = ""
         streamKeys?.forEach {
-            teeCommand += "[f=flv:onfail=ignore]${STREAM_MAPS[it.streamKey]}${it.streamValue}|"
+            teeCommand += "${STREAM_MAPS[it.streamKey]}${it.streamValue}|"
         }
 
         streamUrls?.forEach {
@@ -457,8 +457,8 @@ class XmppApi(
         }
 
         if (app != null && stream != null) {
-            teeCommand += "[f=flv:onfail=ignore]rtmp://srs-edge-service.streaming:1935" +
-                    "?stream=$stream&app=$app|"
+//            teeCommand += "[f=flv:onfail=ignore]rtmp://srs-edge-service.streaming:1935" +
+//                    "?stream=$stream&app=$app|"
         }
 
         if (isRecording == true) {
