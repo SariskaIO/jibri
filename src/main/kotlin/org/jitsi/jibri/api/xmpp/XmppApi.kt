@@ -394,7 +394,7 @@ class XmppApi(
                 val teeCommand = createFfmpegTeeSelectCommand(streamKeys, streamUrls, app,
                     stream, isRecording, callName)
                 if (teeCommand.isNotEmpty()) {
-                    fullRTMPUrl += "\"$teeCommand\""
+                    fullRTMPUrl += teeCommand
                 }
 
                 val viewingUrl = if (startIq.youtubeBroadcastId != null) {
